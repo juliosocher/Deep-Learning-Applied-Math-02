@@ -32,7 +32,7 @@ def calculate_matrix_product(X, W):
           Also, it allows us to use the same function for a single neuron or multiple neurons.
          
     """
-    res = torch.matmul(X, W.T)
+    res = torch.matmul(X, W.T) # W.T is the transpose of W
     return res
 
 def calculate_matrix_prod_with_bias(X, W, b):
