@@ -1,0 +1,46 @@
+name: Testing
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest tests/
+
+      - name: Check test results and report
+        if: ${{ failure() }}
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: 'Test Check',
+              head_sha: context.sha,
+              status: 'completed',
+              conclusion: 'failure',
+              output: {
+                title: 'Tests Failed',
+                summary: 'Some tests failed. Please check the logs for details.'
+              }
+            })
